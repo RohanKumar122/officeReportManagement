@@ -72,6 +72,7 @@ const Register = () => {
                   type="text"
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter your full name"
+                  autoComplete="new-name"
                 />
               </div>
               {errors.name && (
@@ -98,6 +99,7 @@ const Register = () => {
                   type="email"
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter your email"
+                  autoComplete="new-email"
                 />
               </div>
               {errors.email && (
@@ -128,6 +130,7 @@ const Register = () => {
                   type={showPassword ? 'text' : 'password'}
                   className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                   placeholder="Create a password"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
@@ -163,6 +166,7 @@ const Register = () => {
                   type={showConfirmPassword ? 'text' : 'password'}
                   className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                   placeholder="Confirm your password"
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
