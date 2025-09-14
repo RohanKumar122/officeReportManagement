@@ -19,17 +19,18 @@ connectDB();
 // Security middleware
 app.use(helmet());
 
-// CORS configuration
+// Trust proxy for Vercel or any proxy
+app.set('trust proxy', 1);
 
+// CORS configuration
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production'
-    ? process.env.FRONTEND_URL  
+    ? process.env.FRONTEND_URL  // set FRONTEND_URL in Vercel
     : ['http://localhost:3000', 'http://localhost:5173'], // dev
-  credentials: true, // if you are using cookies/auth headers
+  credentials: true,
 };
-
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); 
+app.options('*', cors(corsOptions));
 
 // Body parser middleware
 app.use(express.json({ limit: '10mb' }));
@@ -38,7 +39,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Global rate limiting
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 100,
   message: {
     success: false,
     message: 'Too many requests from this IP, please try again later.'
@@ -46,10 +47,9 @@ const globalLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false
 });
-
 app.use(globalLimiter);
 
-// Health check endpoint
+// Health check
 app.get('/health', (req, res) => {
   res.status(200).json({
     success: true,
@@ -63,7 +63,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/export', exportRoutes);
 
-// Handle 404 routes
+// Handle 404
 app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
@@ -74,38 +74,16 @@ app.use('*', (req, res) => {
 // Global error handler
 app.use((err, req, res, next) => {
   console.error('Global error handler:', err);
-  
-  let error = { ...err };
-  error.message = err.message;
 
-  // Mongoose bad ObjectId
-  if (err.name === 'CastError') {
-    const message = 'Resource not found';
-    error = { message, statusCode: 404 };
-  }
+  let error = { ...err, message: err.message };
 
-  // Mongoose duplicate key
-  if (err.code === 11000) {
-    const message = 'Duplicate field value entered';
-    error = { message, statusCode: 400 };
-  }
-
-  // Mongoose validation error
+  if (err.name === 'CastError') error = { message: 'Resource not found', statusCode: 404 };
+  if (err.code === 11000) error = { message: 'Duplicate field value entered', statusCode: 400 };
   if (err.name === 'ValidationError') {
-    const message = Object.values(err.errors).map(val => val.message).join(', ');
-    error = { message, statusCode: 400 };
+    error = { message: Object.values(err.errors).map(val => val.message).join(', '), statusCode: 400 };
   }
-
-  // JWT errors
-  if (err.name === 'JsonWebTokenError') {
-    const message = 'Invalid token';
-    error = { message, statusCode: 401 };
-  }
-
-  if (err.name === 'TokenExpiredError') {
-    const message = 'Token expired';
-    error = { message, statusCode: 401 };
-  }
+  if (err.name === 'JsonWebTokenError') error = { message: 'Invalid token', statusCode: 401 };
+  if (err.name === 'TokenExpiredError') error = { message: 'Token expired', statusCode: 401 };
 
   res.status(error.statusCode || 500).json({
     success: false,
@@ -125,8 +103,7 @@ process.on('SIGINT', () => {
 });
 
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV}`);
 });

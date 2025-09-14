@@ -27,10 +27,13 @@ api.interceptors.request.use(
 // Response interceptor to handle errors
 api.interceptors.response.use(
   (response) => {
+    console.log('API response:', response);
     return response;
+
   },
   (error) => {
     const message = error.response?.data?.message || 'An error occurred';
+    console.error('API error response:', error.response);
     
     // Handle specific status codes
     if (error.response?.status === 401) {
