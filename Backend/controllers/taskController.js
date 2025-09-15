@@ -274,7 +274,7 @@ const deleteTask = async (req, res) => {
 // @access  Private
 const getTaskStats = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = req.user._id;
 
     const stats = await Task.aggregate([
       { $match: { createdBy: userId } },
