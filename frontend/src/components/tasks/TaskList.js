@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import { taskAPI, exportAPI } from '../../services/api';
-import { 
-  Edit2, 
-  Trash2, 
-  Calendar, 
-  User, 
-  Clock, 
-  CheckCircle, 
+import {
+  Edit2,
+  Trash2,
+  Calendar,
+  User,
+  Clock,
+  CheckCircle,
   XCircle,
   AlertCircle,
   ChevronLeft,
@@ -21,13 +21,13 @@ import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import toast from 'react-hot-toast';
 
-const TaskList = ({ 
-  tasks, 
-  loading, 
-  pagination, 
-  onPageChange, 
-  onEditTask, 
-  onTaskUpdate 
+const TaskList = ({
+  tasks,
+  loading,
+  pagination,
+  onPageChange,
+  onEditTask,
+  onTaskUpdate
 }) => {
   const [selectedTasks, setSelectedTasks] = useState([]);
   const [showTaskDetail, setShowTaskDetail] = useState(null);
@@ -78,7 +78,7 @@ const TaskList = ({
   };
 
   const handleSelectTask = (taskId) => {
-    setSelectedTasks(prev => 
+    setSelectedTasks(prev =>
       prev.includes(taskId)
         ? prev.filter(id => id !== taskId)
         : [...prev, taskId]
@@ -97,22 +97,22 @@ const TaskList = ({
     try {
       setExportLoading(true);
       const response = await exportAPI.exportToExcel();
-      
+
       if (response.data.success) {
         // Create workbook
         const wb = XLSX.utils.book_new();
         const ws = XLSX.utils.json_to_sheet(response.data.data);
-        
+
         // Add worksheet to workbook
         XLSX.utils.book_append_sheet(wb, ws, 'Tasks');
-        
+
         // Generate buffer
         const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-        
+
         // Save file
         const blob = new Blob([wbout], { type: 'application/octet-stream' });
         saveAs(blob, `tasks_export_${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
-        
+
         toast.success('Tasks exported successfully!');
       }
     } catch (error) {
@@ -196,7 +196,7 @@ const TaskList = ({
               </span>
             </label>
           </div>
-          
+
           <button
             onClick={handleExportToExcel}
             disabled={exportLoading}
@@ -209,132 +209,132 @@ const TaskList = ({
       </div>
 
       {/* Task List */}
-     <div className="space-y-4">
-  {tasks.map((task) => (
-    <div
-      key={task._id}
-      className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow"
-    >
-      {/* Header Row */}
-      <div className="flex items-start justify-between">
-        {/* Checkbox + Task Items */}
-        <div className="flex-1 min-w-0">
-          <label className="inline-flex items-start gap-2">
-            <input
-              type="checkbox"
-              checked={selectedTasks.includes(task._id)}
-              onChange={() => handleSelectTask(task._id)}
-              className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-            />
-            <div>
-              {task.tasks.map((taskItem, index) => (
-                <div
-                  key={index}
-                  className="text-gray-900 font-medium text-sm sm:text-base mb-1"
+      <div className="space-y-4">
+        {tasks.map((task) => (
+          <div
+            key={task._id}
+            className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow"
+          >
+            {/* Header Row */}
+            <div className="flex items-start justify-between">
+              {/* Checkbox + Task Items */}
+              <div className="flex-1 min-w-0">
+                <label className="inline-flex items-start gap-2">
+                  <input
+                    type="checkbox"
+                    checked={selectedTasks.includes(task._id)}
+                    onChange={() => handleSelectTask(task._id)}
+                    className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  />
+                  <div>
+                    {task.tasks.map((taskItem, index) => (
+                      <div
+                        key={index}
+                        className="text-gray-900 font-medium text-sm sm:text-base mb-1"
+                      >
+                        • {taskItem}
+                      </div>
+                    ))}
+                  </div>
+                </label>
+              </div>
+
+              {/* Status & Priority */}
+              <div className="ml-3 flex flex-col items-end gap-2">
+                <span
+                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
+                    task.currentStatus
+                  )}`}
                 >
-                  • {taskItem}
-                </div>
-              ))}
+                  {getStatusIcon(task.currentStatus)}
+                  <span className="ml-1 capitalize">
+                    {task.currentStatus.replace("-", " ")}
+                  </span>
+                </span>
+                <span
+                  className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(
+                    task.priority
+                  )}`}
+                >
+                  {task.priority.toUpperCase()}
+                </span>
+              </div>
             </div>
-          </label>
-        </div>
 
-        {/* Status & Priority */}
-        <div className="ml-3 flex flex-col items-end gap-2">
-          <span
-            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
-              task.currentStatus
-            )}`}
-          >
-            {getStatusIcon(task.currentStatus)}
-            <span className="ml-1 capitalize">
-              {task.currentStatus.replace("-", " ")}
-            </span>
-          </span>
-          <span
-            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(
-              task.priority
-            )}`}
-          >
-            {task.priority.toUpperCase()}
-          </span>
-        </div>
-      </div>
+            {/* Meta Info */}
+            <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-xs sm:text-sm text-gray-600">
+              <div className="flex items-center gap-1">
+                <Calendar className="h-4 w-4 text-gray-400" />
+                Created: {format(new Date(task.taskCreatedDate), "MMM dd, yyyy")}
+              </div>
+              <div className="flex items-center gap-1">
+                <Clock className="h-4 w-4 text-gray-400" />
+                Due: {format(new Date(task.expectedDeliveryDate), "MMM dd, yyyy")}
+              </div>
+              <div className="flex items-center gap-1">
+                <User className="h-4 w-4 text-gray-400" />
+                {task.assignedBy}
+              </div>
+              {task.deliveredOn && (
+                <div className="flex items-center gap-1 text-green-600">
+                  <CheckCircle className="h-4 w-4" />
+                  {format(new Date(task.deliveredOn), "MMM dd, yyyy")}
+                </div>
+              )}
+            </div>
 
-      {/* Meta Info */}
-      <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-xs sm:text-sm text-gray-600">
-        <div className="flex items-center gap-1">
-          <Calendar className="h-4 w-4 text-gray-400" />
-          Created: {format(new Date(task.taskCreatedDate), "MMM dd, yyyy")}
-        </div>
-        <div className="flex items-center gap-1">
-          <Clock className="h-4 w-4 text-gray-400" />
-          Due: {format(new Date(task.expectedDeliveryDate), "MMM dd, yyyy")}
-        </div>
-        <div className="flex items-center gap-1">
-          <User className="h-4 w-4 text-gray-400" />
-          {task.assignedBy}
-        </div>
-        {task.deliveredOn && (
-          <div className="flex items-center gap-1 text-green-600">
-            <CheckCircle className="h-4 w-4" />
-            {format(new Date(task.deliveredOn), "MMM dd, yyyy")}
+            {/* Notes */}
+            {task.notes && (
+              <div className="mt-3 text-xs sm:text-sm text-gray-700 bg-gray-50 p-2 rounded-lg">
+                <strong>Notes:</strong> {task.notes}
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="mt-4 flex flex-wrap justify-between items-center gap-3">
+              {/* Buttons */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowTaskDetail(task)}
+                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                  title="View details"
+                >
+                  <Eye className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => onEditTask(task)}
+                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                  title="Edit task"
+                >
+                  <Edit2 className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => handleDeleteTask(task._id)}
+                  disabled={deleteTaskMutation.isLoading}
+                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-50"
+                  title="Delete task"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+
+              {/* Status Dropdown */}
+              <select
+                value={task.currentStatus}
+                onChange={(e) => handleStatusChange(task._id, e.target.value)}
+                disabled={updateTaskMutation.isLoading}
+                className="text-xs sm:text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+              >
+                <option value="pending">Pending</option>
+                <option value="in-progress">In Progress</option>
+                <option value="completed">Completed</option>
+                <option value="overdue">Overdue</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
           </div>
-        )}
+        ))}
       </div>
-
-      {/* Notes */}
-      {task.notes && (
-        <div className="mt-3 text-xs sm:text-sm text-gray-700 bg-gray-50 p-2 rounded-lg">
-          <strong>Notes:</strong> {task.notes}
-        </div>
-      )}
-
-      {/* Actions */}
-      <div className="mt-4 flex flex-wrap justify-between items-center gap-3">
-        {/* Buttons */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowTaskDetail(task)}
-            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition"
-            title="View details"
-          >
-            <Eye className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => onEditTask(task)}
-            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
-            title="Edit task"
-          >
-            <Edit2 className="h-4 w-4" />
-          </button>
-          <button
-            onClick={() => handleDeleteTask(task._id)}
-            disabled={deleteTaskMutation.isLoading}
-            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-50"
-            title="Delete task"
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
-        </div>
-
-        {/* Status Dropdown */}
-        <select
-          value={task.currentStatus}
-          onChange={(e) => handleStatusChange(task._id, e.target.value)}
-          disabled={updateTaskMutation.isLoading}
-          className="text-xs sm:text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
-        >
-          <option value="pending">Pending</option>
-          <option value="in-progress">In Progress</option>
-          <option value="completed">Completed</option>
-          <option value="overdue">Overdue</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-      </div>
-    </div>
-  ))}
-</div>
 
       {/* Pagination */}
       {pagination && pagination.totalPages > 1 && (
@@ -356,7 +356,7 @@ const TaskList = ({
                 Next
               </button>
             </div>
-            
+
             <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-gray-700">
@@ -382,27 +382,26 @@ const TaskList = ({
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </button>
-                  
+
                   {/* Page Numbers */}
                   {[...Array(Math.min(5, pagination.totalPages))].map((_, i) => {
                     const pageNumber = pagination.currentPage - 2 + i;
                     if (pageNumber < 1 || pageNumber > pagination.totalPages) return null;
-                    
+
                     return (
                       <button
                         key={pageNumber}
                         onClick={() => onPageChange(pageNumber)}
-                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                          pageNumber === pagination.currentPage
+                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${pageNumber === pagination.currentPage
                             ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
                             : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                        }`}
+                          }`}
                       >
                         {pageNumber}
                       </button>
                     );
                   })}
-                  
+
                   <button
                     onClick={() => onPageChange(pagination.currentPage + 1)}
                     disabled={!pagination.hasNextPage}
@@ -419,9 +418,9 @@ const TaskList = ({
 
       {/* Task Detail Modal */}
       {showTaskDetail && (
-        <TaskDetailModal 
-          task={showTaskDetail} 
-          onClose={() => setShowTaskDetail(null)} 
+        <TaskDetailModal
+          task={showTaskDetail}
+          onClose={() => setShowTaskDetail(null)}
         />
       )}
     </div>
@@ -443,7 +442,7 @@ const TaskDetailModal = ({ task, onClose }) => {
               <XCircle className="h-6 w-6" />
             </button>
           </div>
-          
+
           <div className="space-y-4">
             <div>
               <h4 className="font-medium text-gray-900 mb-2">Tasks:</h4>
@@ -453,7 +452,7 @@ const TaskDetailModal = ({ task, onClose }) => {
                 ))}
               </ul>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <span className="font-medium text-gray-900">Created:</span>
@@ -482,7 +481,7 @@ const TaskDetailModal = ({ task, onClose }) => {
                 </div>
               )}
             </div>
-            
+
             {task.notes && (
               <div>
                 <span className="font-medium text-gray-900">Notes:</span>
@@ -490,7 +489,7 @@ const TaskDetailModal = ({ task, onClose }) => {
               </div>
             )}
           </div>
-          
+
           <div className="flex justify-end mt-6">
             <button
               onClick={onClose}
