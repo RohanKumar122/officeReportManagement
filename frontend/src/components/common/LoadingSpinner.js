@@ -23,12 +23,12 @@ const LoadingSpinner = ({ size = 'large', message = 'Loading...' }) => {
         </div>
       </div>
       
-      {/* Spinner */}
+      {/* Spinner
       <div className="flex items-center space-x-2">
         <div className={`animate-spin rounded-full border-b-2 border-blue-600 ${sizeClasses[size]}`}></div>
         <span className="text-gray-600 font-medium">{message}</span>
       </div>
-      
+       */}
       {/* Progress dots */}
       <div className="flex space-x-1 mt-4">
         <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"></div>

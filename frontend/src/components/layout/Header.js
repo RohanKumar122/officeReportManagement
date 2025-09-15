@@ -57,12 +57,12 @@ const Header = () => {
             </nav>
 
             {/* Notifications */}
-            <button className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors duration-200">
+            {/* <button className="relative p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full transition-colors duration-200">
               <Bell className="h-5 w-5" />
               <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                 3
               </span>
-            </button>
+            </button> */}
 
             {/* User Profile Dropdown */}
             <div className="relative">
@@ -181,7 +181,7 @@ const Header = () => {
       {/* Click outside to close dropdowns */}
       {(isProfileOpen || isMobileMenuOpen) && (
         <div
-          className="fixed inset-0 z-40"
+          className="fixed inset-0 z-10"
           onClick={() => {
             setIsProfileOpen(false);
             setIsMobileMenuOpen(false);
