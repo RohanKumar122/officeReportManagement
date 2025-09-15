@@ -76,7 +76,7 @@ const TaskForm = ({ task, onClose, onSuccess }) => {
     if (taskData.currentStatus !== 'completed') {
       taskData.deliveredOn = null;
     }
-    console.log("Payload being sent:", taskData);
+    // console.log("Payload being sent:", taskData);
     taskMutation.mutate(taskData);
   };
  

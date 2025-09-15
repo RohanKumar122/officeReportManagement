@@ -126,7 +126,7 @@ const Header = () => {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 pb-4">
+          <div className="md:hidden border-t border-gray-200 pb-4 relative z-50">
             <div className="pt-4 space-y-2">
               {/* User Info */}
               <div className="flex items-center space-x-3 px-3 py-2">
@@ -181,7 +181,7 @@ const Header = () => {
       {/* Click outside to close dropdowns */}
       {(isProfileOpen || isMobileMenuOpen) && (
         <div
-          className="fixed inset-0 z-10"
+          className="fixed inset-0 z-40"
           onClick={() => {
             setIsProfileOpen(false);
             setIsMobileMenuOpen(false);

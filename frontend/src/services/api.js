@@ -27,7 +27,7 @@ api.interceptors.request.use(
 // Response interceptor to handle errors
 api.interceptors.response.use(
   (response) => {
-    console.log('API response:', response);
+    // console.log('API response:', response);
     return response;
 
   },
