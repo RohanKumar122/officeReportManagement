@@ -209,121 +209,132 @@ const TaskList = ({
       </div>
 
       {/* Task List */}
-      <div className="divide-y divide-gray-200">
-        {tasks.map((task) => (
-          <div key={task._id} className="p-6 hover:bg-gray-50 transition-colors duration-200">
-            <div className="flex items-start gap-4">
-              {/* Checkbox */}
-              <label className="flex-shrink-0 mt-1">
-                <input
-                  type="checkbox"
-                  checked={selectedTasks.includes(task._id)}
-                  onChange={() => handleSelectTask(task._id)}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-              </label>
-
-              {/* Task Content */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    {/* Task Items */}
-                    <div className="mb-2">
-                      {task.tasks.map((taskItem, index) => (
-                        <div key={index} className="text-gray-900 font-medium mb-1">
-                          • {taskItem}
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Meta Information */}
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        Created: {format(new Date(task.taskCreatedDate), 'MMM dd, yyyy')}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        Due: {format(new Date(task.expectedDeliveryDate), 'MMM dd, yyyy')}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <User className="h-4 w-4" />
-                        Assigned by: {task.assignedBy}
-                      </div>
-                      {task.deliveredOn && (
-                        <div className="flex items-center gap-1 text-green-600">
-                          <CheckCircle className="h-4 w-4" />
-                          Delivered: {format(new Date(task.deliveredOn), 'MMM dd, yyyy')}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Notes */}
-                    {task.notes && (
-                      <div className="mt-2 text-sm text-gray-600 bg-gray-50 p-2 rounded">
-                        <strong>Notes:</strong> {task.notes}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Status and Priority */}
-                  <div className="flex flex-col items-end gap-2 ml-4">
-                    <div className="flex items-center gap-2">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(task.currentStatus)}`}>
-                        {getStatusIcon(task.currentStatus)}
-                        <span className="ml-1 capitalize">{task.currentStatus.replace('-', ' ')}</span>
-                      </span>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(task.priority)}`}>
-                        {task.priority.toUpperCase()}
-                      </span>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => setShowTaskDetail(task)}
-                        className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200"
-                        title="View details"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => onEditTask(task)}
-                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
-                        title="Edit task"
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteTask(task._id)}
-                        disabled={deleteTaskMutation.isLoading}
-                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200 disabled:opacity-50"
-                        title="Delete task"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-
-                    {/* Status Change Dropdown */}
-                    <select
-                      value={task.currentStatus}
-                      onChange={(e) => handleStatusChange(task._id, e.target.value)}
-                      disabled={updateTaskMutation.isLoading}
-                      className="text-xs border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
-                    >
-                      <option value="pending">Pending</option>
-                      <option value="in-progress">In Progress</option>
-                      <option value="completed">Completed</option>
-                      <option value="overdue">Overdue</option>
-                      <option value="cancelled">Cancelled</option>
-                    </select>
-                  </div>
+     <div className="space-y-4">
+  {tasks.map((task) => (
+    <div
+      key={task._id}
+      className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow"
+    >
+      {/* Header Row */}
+      <div className="flex items-start justify-between">
+        {/* Checkbox + Task Items */}
+        <div className="flex-1 min-w-0">
+          <label className="inline-flex items-start gap-2">
+            <input
+              type="checkbox"
+              checked={selectedTasks.includes(task._id)}
+              onChange={() => handleSelectTask(task._id)}
+              className="mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <div>
+              {task.tasks.map((taskItem, index) => (
+                <div
+                  key={index}
+                  className="text-gray-900 font-medium text-sm sm:text-base mb-1"
+                >
+                  • {taskItem}
                 </div>
-              </div>
+              ))}
             </div>
-          </div>
-        ))}
+          </label>
+        </div>
+
+        {/* Status & Priority */}
+        <div className="ml-3 flex flex-col items-end gap-2">
+          <span
+            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(
+              task.currentStatus
+            )}`}
+          >
+            {getStatusIcon(task.currentStatus)}
+            <span className="ml-1 capitalize">
+              {task.currentStatus.replace("-", " ")}
+            </span>
+          </span>
+          <span
+            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(
+              task.priority
+            )}`}
+          >
+            {task.priority.toUpperCase()}
+          </span>
+        </div>
       </div>
+
+      {/* Meta Info */}
+      <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-y-2 gap-x-4 text-xs sm:text-sm text-gray-600">
+        <div className="flex items-center gap-1">
+          <Calendar className="h-4 w-4 text-gray-400" />
+          Created: {format(new Date(task.taskCreatedDate), "MMM dd, yyyy")}
+        </div>
+        <div className="flex items-center gap-1">
+          <Clock className="h-4 w-4 text-gray-400" />
+          Due: {format(new Date(task.expectedDeliveryDate), "MMM dd, yyyy")}
+        </div>
+        <div className="flex items-center gap-1">
+          <User className="h-4 w-4 text-gray-400" />
+          {task.assignedBy}
+        </div>
+        {task.deliveredOn && (
+          <div className="flex items-center gap-1 text-green-600">
+            <CheckCircle className="h-4 w-4" />
+            {format(new Date(task.deliveredOn), "MMM dd, yyyy")}
+          </div>
+        )}
+      </div>
+
+      {/* Notes */}
+      {task.notes && (
+        <div className="mt-3 text-xs sm:text-sm text-gray-700 bg-gray-50 p-2 rounded-lg">
+          <strong>Notes:</strong> {task.notes}
+        </div>
+      )}
+
+      {/* Actions */}
+      <div className="mt-4 flex flex-wrap justify-between items-center gap-3">
+        {/* Buttons */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowTaskDetail(task)}
+            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition"
+            title="View details"
+          >
+            <Eye className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => onEditTask(task)}
+            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+            title="Edit task"
+          >
+            <Edit2 className="h-4 w-4" />
+          </button>
+          <button
+            onClick={() => handleDeleteTask(task._id)}
+            disabled={deleteTaskMutation.isLoading}
+            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-50"
+            title="Delete task"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Status Dropdown */}
+        <select
+          value={task.currentStatus}
+          onChange={(e) => handleStatusChange(task._id, e.target.value)}
+          disabled={updateTaskMutation.isLoading}
+          className="text-xs sm:text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500 disabled:opacity-50"
+        >
+          <option value="pending">Pending</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+          <option value="overdue">Overdue</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+    </div>
+  ))}
+</div>
 
       {/* Pagination */}
       {pagination && pagination.totalPages > 1 && (
