@@ -61,25 +61,37 @@ const TaskForm = ({ task, onClose, onSuccess }) => {
     }
 
   );
+const onSubmit = (data) => {
+  console.log("=== Form submission started ===");
+  console.log("Raw form data:", data);
 
-  const onSubmit = (data) => {
-    console.log("Form data before processing:", data);
-    // Transform tasks array
-    const taskData = {
-      ...data,
-      tasks: data.tasks.map(t => t.value).filter(t => t.trim() !== ''),
-      expectedDeliveryDate: selectedDate.toISOString(),
-      deliveredOn: deliveredDate ? deliveredDate.toISOString() : null
-    };
-
-    // Remove deliveredOn if status is not completed
-    if (taskData.currentStatus !== 'completed') {
-      taskData.deliveredOn = null;
-    }
-    console.log("Payload being sent:", taskData);
-    taskMutation.mutate(taskData);
+  // Transform tasks array
+  const taskData = {
+    ...data,
+    tasks: data.tasks.map(t => t.value).filter(t => t.trim() !== ''),
+    expectedDeliveryDate: selectedDate
   };
- 
+
+  // Only send deliveredOn if task is completed
+  if (data.currentStatus === 'completed') {
+    taskData.deliveredOn = deliveredDate || new Date();
+  }
+
+  console.log("Transformed payload to send:", taskData);
+
+  taskMutation.mutate(taskData, {
+    onError: (err) => {
+      console.error("API error response:", err.response?.data || err);
+      console.log("Payload that caused error:", taskData);
+    },
+    onSuccess: (res) => {
+      console.log("API response success:", res);
+    }
+  });
+
+  console.log("=== Form submission ended ===");
+};
+
   const addTaskItem = () => {
     append({ value: '' });
   };

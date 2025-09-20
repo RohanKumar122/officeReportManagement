@@ -146,10 +146,11 @@ const validateTaskUpdate = [
     .withMessage('Notes cannot exceed 1000 characters'),
   
   body('deliveredOn')
-    .optional()
+    .optional({ nullable: true })
     .isISO8601()
     .withMessage('Please provide a valid delivery date')
 ];
+
 
 module.exports = {
   validateRegister,

@@ -190,9 +190,16 @@ const getTask = async (req, res) => {
 // @route   PUT /api/tasks/:id
 // @access  Private
 const updateTask = async (req, res) => {
+  console.log("=== Update Task Request Start ===");
+  console.log("Request params:", req.params);
+  console.log("Request body:", req.body);
+  console.log("User ID:", req.user.id);
+
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.error("Validation errors array:", errors.array());
+      console.log("Request body causing validation error:", req.body);
       return res.status(400).json({
         success: false,
         message: 'Validation errors',
@@ -206,15 +213,16 @@ const updateTask = async (req, res) => {
     });
 
     if (!task) {
+    
       return res.status(404).json({
         success: false,
         message: 'Task not found'
       });
     }
 
-    // If status is being updated to completed and deliveredOn is not set
-    if (req.body.currentStatus === 'completed' && !task.deliveredOn) {
+    if (req.body.currentStatus === 'completed' && !req.body.deliveredOn) {
       req.body.deliveredOn = new Date();
+     
     }
 
     task = await Task.findByIdAndUpdate(
@@ -223,18 +231,23 @@ const updateTask = async (req, res) => {
       { new: true, runValidators: true }
     ).populate('createdBy', 'name email');
 
+ 
+
     res.json({
       success: true,
       message: 'Task updated successfully',
       task
     });
+
   } catch (error) {
-    console.error('Update task error:', error);
+   
     res.status(500).json({
       success: false,
       message: 'Server error updating task'
     });
   }
+
+  
 };
 
 // @desc    Delete task

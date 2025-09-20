@@ -52,12 +52,14 @@ const TaskList = ({
     ({ id, data }) => taskAPI.updateTask(id, data),
     {
       onSuccess: () => {
+        console.log('Task updated successfully');
         queryClient.invalidateQueries('tasks');
         queryClient.invalidateQueries('taskStats');
         toast.success('Task updated successfully');
         if (onTaskUpdate) onTaskUpdate();
       },
       onError: (error) => {
+        console.error(error);
         toast.error(error.response?.data?.message || 'Failed to update task');
       }
     }
